@@ -10,10 +10,7 @@ import org.aspectj.lang.reflect.ConstructorSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Optional;
 
 @Aspect
 public class DebugTraceAspect {
@@ -53,19 +50,5 @@ public class DebugTraceAspect {
         final Object result = joinPoint.proceed();
         LOG.debug(methodName + " of " + declaringType.getName() + " is finished. Date = " + new Date());
         return result;
-    }
-
-    private Log getLogger(final ProceedingJoinPoint joinPoint, final Class declaringType) throws IllegalAccessException {
-        final Optional<Field> loggerField = Arrays.stream(declaringType.getDeclaredFields())
-                .filter(field -> field.getType() == Log.class)
-                .findAny();
-
-        if (loggerField.isPresent()) {
-            final Field logger = loggerField.get();
-            logger.setAccessible(true);
-            return (Log) logger.get(joinPoint.getThis());
-        } else {
-            return LogFactory.getLog(declaringType);
-        }
     }
 }
